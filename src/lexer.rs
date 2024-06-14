@@ -26,12 +26,26 @@ impl Lexer {
         self.skip_whitespace();
 
         let token = match self.ch {
+            Some('=') if self.peek_char() == Some(&'=') => {
+                self.read_char();
+                Token::EQ
+            }
             Some('=') => Token::ASSIGN,
             Some(';') => Token::SEMICOLON,
             Some('(') => Token::LPAREN,
             Some(')') => Token::RPAREN,
             Some(',') => Token::COMMA,
             Some('+') => Token::PLUS,
+            Some('-') => Token::MINUS,
+            Some('!') if self.peek_char() == Some(&'=') => {
+                self.read_char();
+                Token::NotEq
+            }
+            Some('!') => Token::BANG,
+            Some('/') => Token::SLASH,
+            Some('*') => Token::ASTERISK,
+            Some('<') => Token::LT,
+            Some('>') => Token::GT,
             Some('{') => Token::LBRACE,
             Some('}') => Token::RBRACE,
             Some('a'..='z') => return lookup_ident(&self.read_identifier()),
@@ -53,6 +67,10 @@ impl Lexer {
         };
         self.position = self.read_position;
         self.read_position += 1;
+    }
+
+    fn peek_char(&self) -> Option<&char> {
+        self.input.first()
     }
 
     fn read_identifier(&mut self) -> String {
@@ -124,6 +142,17 @@ let add = fn(x, y) {
 };
 
 let result = add(five, ten);
+!-/*5;
+5 < 10 > 5;
+
+if (5 < 10) {
+    return true;
+} else {
+    return false;
+}
+
+10 == 10;
+10 != 9;
 ";
 
         let tests = vec![
@@ -162,6 +191,43 @@ let result = add(five, ten);
             Token::COMMA,
             Token::IDENT("ten".to_string()),
             Token::RPAREN,
+            Token::SEMICOLON,
+            Token::BANG,
+            Token::MINUS,
+            Token::SLASH,
+            Token::ASTERISK,
+            Token::INT(5),
+            Token::SEMICOLON,
+            Token::INT(5),
+            Token::LT,
+            Token::INT(10),
+            Token::GT,
+            Token::INT(5),
+            Token::SEMICOLON,
+            Token::IF,
+            Token::LPAREN,
+            Token::INT(5),
+            Token::LT,
+            Token::INT(10),
+            Token::RPAREN,
+            Token::LBRACE,
+            Token::RETURN,
+            Token::TRUE,
+            Token::SEMICOLON,
+            Token::RBRACE,
+            Token::ELSE,
+            Token::LBRACE,
+            Token::RETURN,
+            Token::FALSE,
+            Token::SEMICOLON,
+            Token::RBRACE,
+            Token::INT(10),
+            Token::EQ,
+            Token::INT(10),
+            Token::SEMICOLON,
+            Token::INT(10),
+            Token::NotEq,
+            Token::INT(9),
             Token::SEMICOLON,
             Token::EOF,
         ];

@@ -10,6 +10,16 @@ pub enum Token {
     // Operators
     ASSIGN,
     PLUS,
+    MINUS,
+    BANG,
+    ASTERISK,
+    SLASH,
+
+    EQ,
+    NotEq,
+
+    LT,
+    GT,
 
     // Delimiters
     COMMA,
@@ -23,13 +33,22 @@ pub enum Token {
     // Keywords
     FUNCTION,
     LET,
+    TRUE,
+    FALSE,
+    IF,
+    ELSE,
+    RETURN,
 }
 
 pub fn lookup_ident(ident: &str) -> Token {
-    dbg!(ident);
     match ident {
         "fn" => Token::FUNCTION,
         "let" => Token::LET,
+        "true" => Token::TRUE,
+        "false" => Token::FALSE,
+        "if" => Token::IF,
+        "else" => Token::ELSE,
+        "return" => Token::RETURN,
         non_keyword => Token::IDENT(non_keyword.to_string()),
     }
 }
